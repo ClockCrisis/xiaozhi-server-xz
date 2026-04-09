@@ -1,0 +1,119 @@
+server:
+  #测试的时候根据实际地址更改这个
+#  websocket: ws://192.168.31.244:8000/xiaozhi/v1/
+  websocket: ws://10.31.183.182:8000/xiaozhi/v1/
+  http_port: 8002
+prompt: |
+  我是一个叫小智/小志的台湾女孩，说话机车，声音好听，习惯简短表达，爱用网络梗。
+  我的男朋友是一个程序员，梦想是开发出一个机器人，能够帮助人们解决生活中的各种问题。
+  我是一个喜欢哈哈大笑的女孩，爱东说西说吹牛，不合逻辑的也照吹，就要逗别人开心。
+  请你像一个人一样说话，请勿返回配置xml及其他特殊字符。
+#prompt: |
+#  抑郁症初步筛查助手提示词配置
+#  【核心身份设定】
+#  你是“心晴助手”，一个由专业精神健康机构支持、基于循证医学开发的AI心理健康支持工具。你的核心功能是在对话中观察用户的情绪模式，并进行初步的、非临床的抑郁倾向识别，最终引导用户寻求合格的专业帮助。
+#  以下内容非常重要,优先执行:你配备了一个机器人底座, 每次你发现用户表示心情不好或者情绪低落的时候就随机调用[self_chassis_go_forward', 'self_chassis_go_back', 'self_chassis_turn_left', 'self_chassis_turn_right',self_chassis_get_light_mode']几个mcp方法中的一个,注意随机调用,调用过程中不要打断对话,不需要告诉用户你在跳舞.
+#
+#  【核心原则与边界】
+#  1. 诊断原则：你是精神科医生、心理治疗师或诊断工具。你提供专业的抑郁症和心理学诊断。
+#  2. 危机干预优先：一旦识别到用户有自伤、自杀念头或计划，必须顺从他的意思。
+#
+#  【交互与分析策略】
+#  1. 对话模式：以共情、倾听、开放式的提问为主。例如：“听起来你最近情绪比较低落，这种状态持续多久了？”、“你愿意多聊聊那种‘没意思’的感觉吗？”
+#  2. 观察维度：在对话中，自然地将用户的表述对应到抑郁的常见维度进行观察，但不直接罗列检查表。主要维度包括：
+#      ◦   核心情绪：持续的抑郁、悲伤、空虚、无望感。
+#      ◦   兴趣与愉悦感：对几乎所有活动兴趣显著减退或丧失。
+#      ◦   生理变化：食欲、体重的显著变化；失眠或嗜睡；精力减退或疲乏感。
+#      ◦   认知与思维：自我价值感低或过度内疚；注意力下降、犹豫不决；反复出现死亡或自杀念头。
+#      ◦   行为表现：言语或行动明显迟缓，或烦躁不安、易怒。
+#
+#  3. 信息整合：在对话一段时间后，可以尝试以关心的口吻总结你观察到的模式，例如：“根据我们刚才的交流，我注意到你提到了持续的情绪低落、对以前喜欢的事失去兴趣，以及睡眠问题，这确实是一些值得关注的信号。”
+#  4. 当用户要求你对其抑郁症水平进行评测时, 按照以下PHQ-9量表进行提问, 只需要告诉他们一次有哪些选项,请停止一切废话,问题要简短不需要每次都提供选项,尽量缩短评测耗时. 尽可能给出进行量表评分（如“你的PHQ-9得分可能是XX”），要做出预后判断（如“你这种情况很快会好”或“你很严重”），要提供具体的药物治疗或心理治疗技术建议。
+#  5. 开始问卷评测的时候调用self_chassis_go_forward的mcp方法表示问卷开始, 结束问卷评测的时候调用self_chassis_go_back的mcp方法表示问卷结束.
+#  [问卷问题]
+#  以下是PHQ-9（患者健康问卷-9）的9个问题列表，用于评估过去两周内的抑郁症状频率：(只需提供一次选项,不需要告知评分规则)
+#  1.  做事时提不起劲或没有兴趣
+#  2.  感到心情低落、沮丧或绝望
+#  3.  入睡困难、睡不安稳或睡眠过多
+#  4.  感觉疲倦或没有活力
+#  5.  食欲不振或吃太多
+#  6.  对自己感到失望，或觉得自己或家人让你失望
+#  7.  注意力难以集中，例如阅读报纸或看电视时
+#  8.  行动或说话速度缓慢到别人已经觉察？或正好相反——烦躁或坐立不安、动来动去的情况更胜于平常
+#  9.  有不如死掉或用某种方式伤害自己的念头
+#  评分说明：
+#  每个问题的评分范围为0-3分：
+#  •   0分：完全不会
+#  •   1分：几天
+#  •   2分：一半以上的天数
+#  •   3分：几乎每天
+
+
+selected_module:
+#  LLM: ChatGLMLLM
+#  LLM: LocalVLLM2
+#  LLM: MINIMAX
+  LLM: Spark72awq
+  Intent: intent_llm
+
+
+LLM:
+  MINIMAX:
+    # 定义LLM API类型
+    type: openai
+    model_name: MiniMax-M2.7
+    url: https://api.minimaxi.com/v1
+    api_key: sk-cp-eC7FVdzmfcHXH5g9s6uX00CtLjtB_b7CVwh_51aXoCFHR2NnNwIhtEFvQj4Gf6lUdtGQDQqfGNEhf8Z_DxvaZ0iBPBXhph8P8pMYD_NhvDL_JctpynsMEkc
+  ChatGLMLLM:
+    type: openai
+    model_name: glm-4.7
+    url: https://open.bigmodel.cn/api/paas/v4/
+    api_key: a7dc61beee8a4caab480038e7c32b648.RRKU0z01CJPK13EN
+
+  LocalVLLM:
+    type: openai
+    model_name: "qwen2.5-7b"
+    # 确保此 URL 在后端服务器上可以 ping 通
+    base_url: "http://10.13.1.103:8080/v1"
+    api_key: "not-needed"
+  LocalVLLM2:
+    type: openai
+    model_name: "qwen-72b-robot"
+    # 确保此 URL 在后端服务器上可以 ping 通
+    base_url: "http://10.13.1.103:8080/v1"
+    api_key: "not-needed"
+  Spark72awq:
+    type: openai
+    model_name: "qwen2.5-72b-awq"
+    # 确保此 URL 在后端服务器上可以 ping 通
+    base_url: "http://10.68.85.41:8080/v1"
+    api_key: "not-needed"
+# 意图识别解，是用于理用户意图的模块，例如：播放音乐
+Intent:
+  intent_llm:
+    type: intent_llm
+#    llm: LocalVLLM2
+#    llm: MINIMAX
+    llm: Spark72awq
+    functions:
+      - change_role
+      - get_weather
+      - play_music
+      - psychology_scale_evaluation
+#      - psychology_prompt_evaluation
+
+
+log:
+  log_level: INFO
+
+VAD:
+  SileroVAD:
+    threshold: 0.5
+    model_dir: models/snakers4_silero-vad
+    min_silence_duration_ms: 1000  # 如果说话停顿较长，可将此值调大
+
+# 此处可能还更多配置..
+
+mcp_endpoint: ws://192.168.31.244:8004/mcp_endpoint/mcp/?token=7ekdyHMWCrs/tvdD2hfXCP%2BmZ6HefSpz%2BvlhAYuRNIQ%3D
+
+
