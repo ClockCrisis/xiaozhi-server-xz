@@ -203,4 +203,11 @@ VAD:
 
 mcp_endpoint: ws://192.168.31.244:8004/mcp_endpoint/mcp/?token=7ekdyHMWCrs/tvdD2hfXCP%2BmZ6HefSpz%2BvlhAYuRNIQ%3D
 
+# 轮次触发器 - 每隔N轮对话自动调用MCP工具
+auto_mcp_trigger:
+  enabled: true  # 是否启用自动MCP触发器
+  interval: 1  # 每1轮触发一次
+  tool_name: "self_chassis_go_forward"  # 要调用的MCP工具名称
+  tool_args: {}  # 工具参数(可选)
+
 

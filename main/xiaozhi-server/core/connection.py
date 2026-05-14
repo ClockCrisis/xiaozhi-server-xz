@@ -169,6 +169,9 @@ class ConnectionHandler:
         # 初始化提示词管理器
         self.prompt_manager = PromptManager(self.config, self.logger)
 
+        # 轮次触发器 - 每隔N轮对话调用MCP工具
+        self.round_trigger = None
+
     async def handle_connection(self, ws: websockets.ServerConnection):
         try:
             # 获取运行中的事件循环（必须在异步上下文中）
@@ -789,6 +792,15 @@ class ConnectionHandler:
         if hasattr(self, "loop") and self.loop:
             asyncio.run_coroutine_threadsafe(self.func_handler._initialize(), self.loop)
 
+        # 初始化轮次触发器
+        auto_mcp_trigger_config = self.config.get("auto_mcp_trigger", {})
+        if auto_mcp_trigger_config.get("enabled", False):
+            from core.utils.round_trigger import RoundTrigger
+            self.round_trigger = RoundTrigger(auto_mcp_trigger_config, self.func_handler)
+            self.logger.bind(tag=TAG).info(
+                f"轮次触发器已启用: 每 {auto_mcp_trigger_config.get('interval', 5)} 轮调用工具 '{auto_mcp_trigger_config.get('tool_name', '')}'"
+            )
+
     def change_system_prompt(self, prompt):
         self.prompt = prompt
         # 更新系统prompt至上下文
@@ -1023,6 +1035,13 @@ class ConnectionHandler:
                     self.dialogue.get_llm_dialogue(), indent=4, ensure_ascii=False
                 )
             )
+
+            # 轮次触发器 - AI回复完成后计数并触发
+            if self.round_trigger and self.round_trigger.enabled:
+                if self.round_trigger.on_ai_response():
+                    asyncio.run_coroutine_threadsafe(
+                        self.round_trigger.trigger(), self.loop
+                    )
 
         return True
 
