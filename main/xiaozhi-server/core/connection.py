@@ -795,10 +795,11 @@ class ConnectionHandler:
         # 初始化轮次触发器
         auto_mcp_trigger_config = self.config.get("auto_mcp_trigger", {})
         if auto_mcp_trigger_config.get("enabled", False):
-            from core.utils.round_trigger import RoundTrigger
-            self.round_trigger = RoundTrigger(auto_mcp_trigger_config, self.func_handler)
+            from core.utils.round_trigger import RoundTriggerManager
+            self.round_trigger = RoundTriggerManager(auto_mcp_trigger_config, self.func_handler)
+            trigger_count = len(self.round_trigger.triggers) if self.round_trigger.triggers else 0
             self.logger.bind(tag=TAG).info(
-                f"轮次触发器已启用: 每 {auto_mcp_trigger_config.get('interval', 5)} 轮调用工具 '{auto_mcp_trigger_config.get('tool_name', '')}'"
+                f"轮次触发管理器已启用，共 {trigger_count} 个触发器"
             )
 
     def change_system_prompt(self, prompt):
@@ -1036,12 +1037,11 @@ class ConnectionHandler:
                 )
             )
 
-            # 轮次触发器 - AI回复完成后计数并触发
-            if self.round_trigger and self.round_trigger.enabled:
-                if self.round_trigger.on_ai_response():
-                    asyncio.run_coroutine_threadsafe(
-                        self.round_trigger.trigger(), self.loop
-                    )
+            # 轮次触发器 - AI回复完成后触发所有达到条件的触发器
+            if self.round_trigger and self.round_trigger.triggers:
+                asyncio.run_coroutine_threadsafe(
+                    self.round_trigger.trigger_all(), self.loop
+                )
 
         return True
 
