@@ -1,6 +1,6 @@
 """轮次触发器 - 每隔N轮对话自动调用MCP工具"""
 
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from config.logger import setup_logging
 
 
@@ -113,8 +113,33 @@ class RoundTriggerManager:
                 f"触发完成: '{trigger.tool_name}' 返回: {result}"
             )
 
+            # 如果是拍照工具，解析结果并自动转向
+            if trigger.tool_name == "self_camera_take_photo":
+                direction = self._parse_direction_from_result(result)
+                if direction:
+                    turn_tool = "self_chassis_turn_left" if direction == "left" else "self_chassis_turn_right"
+                    self.logger.bind(tag=TAG).info(
+                        f"拍照结果为'{direction}'，自动调用 '{turn_tool}'"
+                    )
+                    await self.func_handler.tool_manager.execute_tool(turn_tool, {})
+
         except Exception as e:
             self.logger.bind(tag=TAG).error(f"触发执行失败: {e}")
+
+    def _parse_direction_from_result(self, result) -> Optional[str]:
+        """从拍照结果中解析方向"""
+        try:
+            response_text = result.response if hasattr(result, 'response') else str(result)
+            print(f"解析拍照结果: {response_text}")
+            response_lower = response_text.lower()
+            if "左边" in response_text or "left" in response_lower:
+                return "left"
+            elif "右边" in response_text or "right" in response_lower:
+                return "right"
+            return None
+        except Exception as e:
+            self.logger.bind(tag=TAG).warning(f"解析方向失败: {e}")
+            return None
 
     def reset_all(self):
         """重置所有触发器计数"""
